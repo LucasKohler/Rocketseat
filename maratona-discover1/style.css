@@ -102,10 +102,16 @@ button:hover {
 }
 
 /* Header ===========================*/
+
 header {
   background: #2d4a22;
   padding: 2rem 0 12rem;
   text-align: center;
+}
+
+header img {
+  position: relative;
+  top: 1.6rem;
 }
 
 /* Balance ===========================*/
