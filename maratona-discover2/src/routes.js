@@ -1,22 +1,33 @@
-const express = require("express");
-const routes = express.Router();
+const express = require('express')
+const routes = express.Router()
 
-const basePath = __dirname + "/views";
+// ejs não precisa do '/' e '.html' nos files e ele localiza a pasta views como basePath
+// const views = __dirname + '/views/';
 
-routes.get("/", (request, response) =>
-  response.sendFile(basePath + "/index.html")
-);
+const profile = {
+	name: 'lucas',
+	avatar: 'https://github.com/lucaskohler.png',
+	'monthly-budget': 3000,
+	'days-per-week': 5,
+	'hours-per-day': 3,
+	'vacation-per-year': 4
+}
 
-routes.get("/job", (request, response) =>
-  response.sendFile(basePath + "/job.html")
-);
+const jobs = []
 
-routes.get("/job/edit", (request, response) =>
-  response.sendFile(basePath + "/job-edit.html")
-);
+routes.get('/', (req, res) => res.render('index'))
+routes.get('/job', (req, res) => res.render('job'))
+routes.post('/job', (req, res) => {
+	jobs.push({
+		name: re.body.name,
+		'daily-hours': req.body['daily-houres'],
+		'total-hours': req.body['total-hours'],
+		created_at: Date.now()
+	})
 
-routes.get("/profile", (request, response) =>
-  response.sendFile(basePath + "/profile.html")
-);
+	return res.redirect('/')
+})
+routes.get('/job/edit', (req, res) => res.render('job-edit'))
+routes.get('/profile', (req, res) => res.render('profile', { profile: profile }))
 
-module.exports = routes;
+module.exports = routes
