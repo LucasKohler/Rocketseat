@@ -1,8 +1,18 @@
+import { Post } from './post'
 
-function App() {
+export function App() {
   return (
-    <h1>Hello World</h1>
+    <div>
+      <Post
+        author="Lucas Kohler"
+        content="lorem impsum dolor suit amet conesht shajem"
+      />
+
+      <Post
+        author="Kohler Lucas"
+        content="Post legal"
+      />
+    </div>
   )
 }
 
-export default App
