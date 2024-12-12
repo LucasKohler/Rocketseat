@@ -1,18 +1,25 @@
+import { Header } from './components/Header'
 import { Post } from './post'
+
+import './styles.css';
 
 export function App() {
   return (
-    <div>
-      <Post
-        author="Lucas Kohler"
-        content="lorem impsum dolor suit amet conesht shajem"
-      />
+    <>
+      <Header />
 
-      <Post
-        author="Kohler Lucas"
-        content="Post legal"
-      />
-    </div>
+      <div>
+        <Post
+          author="Lucas Kohler"
+          content="lorem impsum dolor suit amet conesht shajem"
+        />
+
+        <Post
+          author="Kohler Lucas"
+          content="Post legal"
+        />
+      </div>
+    </>
   )
 }
 
