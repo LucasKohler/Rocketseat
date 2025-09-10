@@ -1,31 +1,39 @@
 ﻿using CashFlow.Communication.Responses;
 using CashFlow.Exception;
 using CashFlow.Exception.ExceptionsBase;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace CashFlow.Api.Filters;
+namespace CashFlow.API.Filters;
 
 public class ExceptionFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
     {
-        if(context.Exception is CashFlowException cashFlowException)
-            HandleProjectException(context, cashFlowException);
+        if(context.Exception is CashFlowException)
+        {
+            HandleProjectException(context);
+        }
         else
+        {
             ThrowUnknowError(context);
+        }
     }
 
-    private static void HandleProjectException(ExceptionContext context, CashFlowException cashFlowException)
+    private void HandleProjectException(ExceptionContext context)
     {
-        context.HttpContext.Response.StatusCode = cashFlowException!.StatusCode;
-        context.Result = new ObjectResult(new ResponseErrorJson(cashFlowException.GetErrors()));
+        var cashFlowException = (CashFlowException)context.Exception;
+        var errorResponse = new ResponseErrorJson(cashFlowException.GetErrors());
+
+        context.HttpContext.Response.StatusCode = cashFlowException.StatusCode;
+        context.Result = new ObjectResult(errorResponse);
     }
 
-    private static void ThrowUnknowError(ExceptionContext context)
+    private void ThrowUnknowError(ExceptionContext context)
     {
-        context.HttpContext.Response.StatusCode =  StatusCodes.Status500InternalServerError;
-        context.Result = new ObjectResult(new ResponseErrorJson(ResourceErrorMessages.UNKNOWN_ERROR));
+        var errorResponse = new ResponseErrorJson(ResourceErrorMessages.UNKNOWN_ERROR);
+
+        context.HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Result = new ObjectResult(errorResponse);
     }
 }

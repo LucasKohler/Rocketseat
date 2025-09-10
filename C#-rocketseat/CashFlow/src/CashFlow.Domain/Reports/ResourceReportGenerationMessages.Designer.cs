@@ -97,7 +97,7 @@ namespace CashFlow.Domain.Reports {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Debit card.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Debit Card.
         /// </summary>
         public static string DEBIT_CARD {
             get {

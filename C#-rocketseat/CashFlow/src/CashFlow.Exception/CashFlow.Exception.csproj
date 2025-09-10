@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CashFlow.Communication\CashFlow.Communication.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="ResourceErrorMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

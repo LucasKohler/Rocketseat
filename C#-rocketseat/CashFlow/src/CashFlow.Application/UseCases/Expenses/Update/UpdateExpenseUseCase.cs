@@ -1,37 +1,62 @@
 ﻿using AutoMapper;
-
 using CashFlow.Communication.Requests;
 using CashFlow.Domain.Repositories;
 using CashFlow.Domain.Repositories.Expenses;
+using CashFlow.Domain.Services.LoggedUser;
 using CashFlow.Exception;
 using CashFlow.Exception.ExceptionsBase;
 
 namespace CashFlow.Application.UseCases.Expenses.Update;
-
-public class UpdateExpenseUseCase(IExpensesUpdateOnlyRepository updateOnlyRepository, IUnitOfWork unitOfWork, IMapper mapper) : IUpdateExpenseUseCase
+public class UpdateExpenseUseCase : IUpdateExpenseUseCase
 {
-    private readonly IExpensesUpdateOnlyRepository _updateOnlyRepository = updateOnlyRepository;
-    private readonly IMapper _mapper = mapper;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IExpensesUpdateOnlyRepository _repository;
+    private readonly ILoggedUser _loggedUser;
+
+    public UpdateExpenseUseCase(
+        IMapper mapper, 
+        IUnitOfWork unitOfWork,
+        IExpensesUpdateOnlyRepository repository,
+        ILoggedUser loggedUser)
+    {
+        _mapper = mapper;
+        _unitOfWork = unitOfWork;
+        _repository = repository;
+        _loggedUser = loggedUser;
+    }
 
     public async Task Execute(long id, RequestExpenseJson request)
     {
         Validate(request);
+        
+        var loggedUser = await _loggedUser.Get();
 
-        var expense = await _updateOnlyRepository.GetById(id) ?? throw new NotFoundException(ResourceErrorMessages.EXPENSE_NOT_FOUND);
+        var expense = await _repository.GetById(loggedUser, id);
+
+        if (expense is null)
+        {
+            throw new NotFoundException(ResourceErrorMessages.EXPENSE_NOT_FOUND);
+        }
 
         _mapper.Map(request, expense);
 
-        _updateOnlyRepository.Update(expense);
+        _repository.Update(expense);
 
         await _unitOfWork.Commit();
     }
 
-    private static void Validate(RequestExpenseJson request)
+    public void Validate(RequestExpenseJson request)
     {
-        var result = new ExpenseValidator().Validate(request);
+        var validator = new ExpenseValidator();
 
-        if (!result.IsValid)
-            throw new ErrorOnValidationException([.. result.Errors.Select(f => f.ErrorMessage)]);
+        var result = validator.Validate(request);
+
+        if(result.IsValid is false)
+        {
+            var errorMessages = result.Errors.Select(f => f.ErrorMessage).ToList();
+
+            throw new ErrorOnValidationException(errorMessages);
+        }
     }
 }
